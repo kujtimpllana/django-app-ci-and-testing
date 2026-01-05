@@ -43,10 +43,9 @@ jobs:
         path: bandit-scan-report.json
 
   image_scan:
-    needs: code_scan
 
     name: Build Image and Run Image Scan
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
