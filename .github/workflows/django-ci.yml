@@ -33,12 +33,7 @@ jobs:
       run: pip install bandit
 
     - name: Run Bandit Scan
-      run: |
-        bandit --severity-level=medium 
-        --confidence-level=medium 
-        -r .
-        -f json 
-        -o bandit-scan-report.json
+      run: bandit --severity-level=medium --confidence-level=medium -r . -f json -o bandit-scan-report.json
 
     - name: Upload Bandit Artifact
       uses: actions/upload-artifact@v6.0.0
@@ -48,6 +43,7 @@ jobs:
         path: bandit-scan-report.json
 
   image_scan:
+    needs: code_scan
 
     name: Build Image and Run Image Scan
     runs-on: ubuntu-22.04
