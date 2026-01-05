@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9]
 
     steps:
     - name: Checkout Code
@@ -27,6 +27,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
+    - name: Create a Folder + File to host Bandit Artifacts
+      run: | 
+        mkdir -p artifacts
+        touch artifacts/bandit-scan-report.json
         
     - name: Bandit Scan
       run: bandit -ll -ii -r . -f json -o bandit-scan-report.json
@@ -52,6 +57,9 @@ jobs:
       with:
         docker_version: '20.10'
 
+    - name: Create a Folder + File to host Docker Scout Artifacts
+      run: touch artifacts/docker-scout-report.sarif
+
     - name: Build Docker Image
       run: docker build -f Dockerfile -t djangoapp:latest .
 
@@ -70,7 +78,7 @@ jobs:
       if: always()
       with:
         name: docker-scout-artifact
-        path: docker-scout-report.sarif
+        path: artifacts/docker-scout-report.sarif
 
     
     
