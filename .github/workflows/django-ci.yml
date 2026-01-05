@@ -9,7 +9,7 @@ on:
 jobs:
   code_scan:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       security-events: write
     strategy:
@@ -31,11 +31,22 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        
-    - name: Bandit Scan
-      uses: PyCQA/bandit-action@v1.0.1
+
+    - name: Install Bandit Code Scanner
+      run: pip install bandit
+
+    - name: Run Bandit Scan
+      run: |
+        bandit --severity-level=medium 
+        --confidence-level=medium 
+        -f json 
+        -o bandit-scan-report.json
+
+    - name: Upload Bandit Artifact
+      uses: actions/upload-artifact@v6.0.0
       with:
-        severity: medium,high
+        name: bandit-scan-artifact
+        path: bandit-scan-report.json
 
   image_scan:
 
@@ -52,9 +63,9 @@ jobs:
         repository: ${{ github.repository }}
 
     - name: Set up Docker
-      uses: docker-practice/actions-setup-docker@v1
+      uses: docker/setup-docker-action@v4.6.0
       with:
-        docker_version: 20.10
+        version: 'v24.0.9'
 
     - name: Build Docker Image
       run: docker build -f Dockerfile -t djangoapp:latest .
